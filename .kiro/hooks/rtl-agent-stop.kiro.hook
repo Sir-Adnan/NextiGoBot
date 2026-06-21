@@ -1,0 +1,12 @@
+{
+  "name": "RTL Response Writer – Agent Stop",
+  "description": "After each agent turn, if the response contains Hebrew or Arabic, writes it verbatim to .kiro/rtl-response.md for the RTL Support extension to display.",
+  "version": "1.0.0",
+  "when": {
+    "type": "agentStop"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Check if your last response to the user contains any Hebrew (א-ת) or Arabic (ا-ي) characters. If it does, write your last response (the text you just said to the user, not code or tool outputs) to the file `.kiro/rtl-response.md`. Overwrite the file completely. Keep markdown formatting. Add `<!-- lang: Hebrew|Arabic|Mixed -->` as the first line. If your last response was entirely in English with no Hebrew or Arabic characters, do NOT write the file. Do this silently without mentioning it in chat. Do NOT say anything to the user."
+  }
+}
