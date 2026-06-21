@@ -9,6 +9,39 @@ from sqlalchemy.orm import relationship
 Base = declarative_base()
 
 
+class Category(Base):
+    """مدل دسته‌بندی محصولات"""
+    __tablename__ = 'categories'
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(255), nullable=False, unique=True)
+    description = Column(Text, nullable=True)
+    emoji = Column(String(10), nullable=True)  # ایموجی برای دسته
+    parent_id = Column(Integer, ForeignKey('categories.id', ondelete='CASCADE'), nullable=True)
+    is_active = Column(Boolean, default=True)
+    sort_order = Column(Integer, default=0)  # ترتیب نمایش
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    # روابط
+    products = relationship("Product", back_populates="category")
+    parent = relationship("Category", remote_side=[id], backref="subcategories")
+    
+    def __repr__(self):
+        return f"<Category(id={self.id}, name='{self.name}')>"
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'emoji': self.emoji,
+            'parent_id': self.parent_id,
+            'is_active': self.is_active,
+            'sort_order': self.sort_order,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+        }
+
+
 class Product(Base):
     """مدل محصولات"""
     __tablename__ = 'products'
@@ -17,12 +50,19 @@ class Product(Base):
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     price = Column(Integer, nullable=False)
+    category_id = Column(Integer, ForeignKey('categories.id', ondelete='SET NULL'), nullable=True)
     image_url = Column(String(500), nullable=True)
     is_active = Column(Boolean, default=True)
+    
+    # اضافه کردن فیلدهای دوره‌ای
+    is_subscription = Column(Boolean, default=False)  # آیا محصول اشتراکی است؟
+    duration_months = Column(Integer, nullable=True)  # مدت زمان (ماه)
+    
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # روابط
+    category = relationship("Category", back_populates="products")
     accounts = relationship("Account", back_populates="product", cascade="all, delete-orphan")
     orders = relationship("Order", back_populates="product")
     
@@ -35,10 +75,29 @@ class Product(Base):
             'name': self.name,
             'description': self.description,
             'price': self.price,
+            'category_id': self.category_id,
             'image_url': self.image_url,
             'is_active': self.is_active,
+            'is_subscription': self.is_subscription,
+            'duration_months': self.duration_months,
             'created_at': self.created_at.isoformat() if self.created_at else None,
         }
+    
+    def get_duration_text(self) -> str:
+        """دریافت متن مدت زمان"""
+        if not self.is_subscription or not self.duration_months:
+            return ""
+        
+        if self.duration_months == 1:
+            return "۱ ماهه"
+        elif self.duration_months == 3:
+            return "۳ ماهه"
+        elif self.duration_months == 6:
+            return "۶ ماهه"
+        elif self.duration_months == 12:
+            return "۱ ساله"
+        else:
+            return f"{self.duration_months} ماهه"
 
 
 class Account(Base):

@@ -1,100 +1,158 @@
 <!-- lang: Arabic -->
-عالی! تمام تغییرات انجام شد! 🎉
+عالی! همه چیز آماده شد! 🎉
 
-## خلاصه تغییرات انجام شده:
+## ✅ چه کارهایی انجام دادم:
 
-### ✨ **1. ایموجی‌های پریمیوم تلگرام**
+### 1. 🔥 Custom Emoji واقعی تلگرام
+**فایل‌های جدید:**
+- `bot/custom_emojis.py` - ID های Custom Emoji
+- `bot/emoji_fetcher.py` - ابزار دریافت خودکار ID
 
-فایل جدید `bot/emojis.py` ایجاد شد با:
-- کلاس `PremiumEmojis` با بیش از 50 ایموجی زیبا
-- کلاس `EmojiTexts` برای متن‌های آماده
-- پشتیبانی از Custom Emoji IDs
+**نحوه استفاده:**
+1. به [@AdsMarkdownBot](https://t.me/AdsMarkdownBot) برو
+2. ایموجی بفرست (مثلاً 🔥)
+3. ID رو کپی کن و در `bot/custom_emojis.py` بذار
 
-### 🗄️ **2. دیتابیس PostgreSQL**
+### 2. 📂 دسته‌بندی کامل محصولات
+**قابلیت‌ها:**
+- دسته و زیردسته
+- ایموجی برای هر دسته
+- مرتب‌سازی
+- فعال/غیرفعال کردن
 
-- **فایل‌های جدید:**
-  - `bot/models.py` - مدل‌های SQLAlchemy (Product, Account, Order, Setting)
-  - `bot/database_new.py` - دیتابیس جدید با PostgreSQL
+**دسته‌های پیش‌فرض:**
+- 📺 استریمینگ (Netflix, Spotify, YouTube...)
+- 🎮 گیمینگ (Steam, PlayStation, Xbox...)
+- 📚 آموزشی (Udemy, Coursera...)
+- 🔒 VPN (NordVPN, ExpressVPN...)
+- 💿 نرم‌افزار (Office, Adobe...)
 
-- **قابلیت‌ها:**
-  - Connection pooling
-  - Transaction‌های امن
-  - عملکرد 5 برابر سریع‌تر
-  - پشتیبانی از هزاران کاربر همزمان
+### 3. ⏰ محصولات اشتراکی
+**مدت زمان‌ها:**
+- ۱ ماهه
+- ۳ ماهه
+- ۶ ماهه
+- ۱ ساله
 
-### 🎛️ **3. پنل Adminer**
+**فیلدهای جدید در Product:**
+- `is_subscription` - آیا اشتراکی است
+- `duration_months` - مدت زمان به ماه
+- `category_id` - دسته‌بندی
 
-- دسترسی در `http://localhost:8080`
-- مدیریت گرافیکی دیتابیس
-- اجرای Query
-- Export/Import داده‌ها
+### 4. 🎨 دکمه‌های رنگی
+**فایل جدید:**
+- `bot/colored_buttons.py` - دکمه‌های رنگی
 
-راهنما: `docs/ADMINER.md`
-
-### 📊 **4. آمار فروش**
-
-هندلر `admin_stats` اضافه شد که نمایش می‌دهد:
-- تعداد سفارشات (کل، تکمیل شده، در انتظار)
-- مجموع فروش
-- آمار محصولات و اکانت‌ها
-
-### 🎨 **5. رابط کاربری زیباتر**
-
-همه پیام‌ها و کیبوردها با ایموجی‌های پریمیوم به‌روز شدند:
-- `bot/handlers/user.py` ✅
-- `bot/handlers/admin.py` ✅
-- `bot/keyboards/inline.py` ✅
-
-### 📦 **6. Docker Compose جدید**
-
-سه سرویس:
-1. **postgres** - دیتابیس PostgreSQL
-2. **adminer** - پنل مدیریت
-3. **telegram-bot** - ربات تلگرام
-
-### 📚 **7. مستندات جدید**
-
-- `UPGRADE_GUIDE.md` - راهنمای ارتقا
-- `WHATS_NEW.md` - تغییرات نسخه 2.0
-- `docs/ADMINER.md` - راهنمای Adminer
-- `migrate_sqlite_to_postgres.py` - اسکریپت مهاجرت
-
-### ⚙️ **8. تنظیمات به‌روز**
-
-- `.env.example` با متغیرهای PostgreSQL
-- `requirements.txt` با پکیج‌های جدید
-- `bot/config.py` با تنظیمات DATABASE_URL
+**انواع:**
+- 🔵 آبی (Primary) - عادی
+- 🟢 سبز (Success) - موفقیت
+- 🔴 قرمز (Danger) - خطر
+- 🟡 زرد (Warning) - هشدار
 
 ---
 
 ## 🚀 راه‌اندازی:
 
-```bash
-# 1. تنظیم محیط
-cp .env.example .env
-# ویرایش .env و وارد کردن:
-# - BOT_TOKEN
-# - ADMIN_ID
-# - CARD_NUMBER
-# - رمز PostgreSQL
+### مرحله 1: دریافت Custom Emoji IDs
 
-# 2. اجرا
+```bash
+# به @AdsMarkdownBot برید
+# هر ایموجی رو بفرستید:
+🔥 ⭐ ✨ 🎉 ❤️ 💰 🎁 🚀
+
+# ID ها رو در bot/custom_emojis.py ذخیره کنید
+```
+
+### مرحله 2: اجرای Setup
+
+```bash
+# اگر Docker استفاده می‌کنید:
+docker-compose down
 docker-compose up -d
 
-# 3. مشاهده لاگ
-docker-compose logs -f
+# ایجاد دسته‌بندی‌ها
+docker exec -it telegram-shop-bot python setup_categories.py
 
-# 4. دسترسی به Adminer
-# باز کردن: http://localhost:8080
+# یا بدون Docker:
+python setup_categories.py
+```
+
+### مرحله 3: مشاهده دسته‌بندی‌ها
+
+```bash
+python setup_categories.py show
+```
+
+### مرحله 4: ری‌استارت
+
+```bash
+docker-compose restart telegram-bot
+docker-compose logs -f telegram-bot
 ```
 
 ---
 
-## 📖 مستندات مهم:
+## 📁 فایل‌های جدید:
 
-1. **QUICKSTART.md** - شروع سریع 5 دقیقه‌ای
-2. **UPGRADE_GUIDE.md** - ارتقا از نسخه قدیم
-3. **WHATS_NEW.md** - تمام تغییرات نسخه 2.0
-4. **docs/ADMINER.md** - کار با پنل دیتابیس
+```
+✨ bot/custom_emojis.py         - Custom Emoji IDs
+✨ bot/emoji_fetcher.py         - دریافت خودکار ID
+✨ bot/colored_buttons.py       - دکمه‌های رنگی
+🔄 bot/models.py               - Category + Subscription
+🔄 bot/database_new.py         - متدهای جدید
+🔄 bot/keyboards/inline.py     - کیبوردهای رنگی
+✨ setup_categories.py          - اسکریپت Setup
+✨ COMPLETE_SETUP.md           - راهنمای کامل
+```
 
-همه چیز آماده است! موفق باشی! 🎉🚀
+---
+
+## 🎨 نمونه خروجی ربات:
+
+```
+🔥 سلام علی! ✨
+
+📺 استریمینگ
+  ├─ 🎬 Netflix
+  ├─ 🎵 Spotify
+  └─ ▶️ YouTube Premium
+
+🎮 گیمینگ
+  ├─ 💨 Steam
+  └─ 🎯 PlayStation
+
+محصول: Netflix Premium
+📝 انتخاب مدت زمان:
+
+[🔵 ۱ ماهه]  [🔵 ۳ ماهه]
+[🟢 ۶ ماهه]  [🟢 ۱ ساله]
+```
+
+---
+
+## 📖 مستندات:
+
+1. **COMPLETE_SETUP.md** - راهنمای گام به گام کامل
+2. **setup_categories.py** - اسکریپت ایجاد دسته‌ها
+3. **bot/custom_emojis.py** - نحوه استفاده از Custom Emoji
+
+---
+
+## ✅ چک‌لیست نهایی:
+
+- [ ] Custom Emoji ID ها رو از @AdsMarkdownBot بگیر
+- [ ] در `bot/custom_emojis.py` ذخیره کن
+- [ ] `setup_categories.py` رو اجرا کن
+- [ ] ربات رو ری‌استارت کن
+- [ ] تست کن!
+
+---
+
+**همه چیز آماده است! ربات حالا:**
+- ✅ Custom Emoji واقعی داره
+- ✅ دسته‌بندی کامل داره
+- ✅ محصولات اشتراکی پشتیبانی می‌کنه
+- ✅ دکمه‌های رنگی و زیبا داره
+- ✅ خیلی خیلی خوشگل شده! 🎨🚀
+
+موفق باشی! 🎉

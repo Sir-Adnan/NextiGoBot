@@ -7,6 +7,8 @@ from bot.keyboards.inline import (
 )
 from bot.config import ADMIN_ID, CARD_NUMBER, CARD_HOLDER_NAME
 from bot.emojis import PremiumEmojis, EmojiTexts
+from bot.stickers import StickerManager
+from bot.premium_utils import premium_text
 
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -14,10 +16,17 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     is_admin = user.id == ADMIN_ID
     
+    # ارسال استیکر خوش‌آمدگویی (فقط در شروع اولیه)
+    if not update.callback_query:
+        await StickerManager.send_welcome_sticker(update, context)
+    
     if is_admin:
         welcome_text = EmojiTexts.admin_welcome(user.first_name)
     else:
         welcome_text = EmojiTexts.welcome(user.first_name)
+    
+    # استفاده از Premium formatting
+    welcome_text = premium_text(welcome_text)
     
     if update.callback_query:
         await update.callback_query.answer()

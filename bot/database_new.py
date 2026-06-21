@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sess
 from sqlalchemy import select, func, and_
 from sqlalchemy.orm import selectinload
 
-from bot.models import Base, Product, Account, Order, Setting
+from bot.models import Base, Product, Account, Order, Setting, Category
 
 
 class Database:
@@ -346,3 +346,62 @@ class Database:
 
 # نمونه سراسری دیتابیس
 db = Database()
+
+    
+    # ============= دسته‌بندی‌ها =============
+    
+    async def add_category(self, name: str, description: str = None, emoji: str = None, parent_id: int = None) -> int:
+        """افزودن دسته‌بندی جدید"""
+        async with self.async_session() as session:
+            category = Category(
+                name=name,
+                description=description,
+                emoji=emoji,
+                parent_id=parent_id
+            )
+            session.add(category)
+            await session.commit()
+            await session.refresh(category)
+            return category.id
+    
+    async def get_categories(self, parent_id: int = None, active_only: bool = True) -> List[Dict]:
+        """دریافت لیست دسته‌بندی‌ها"""
+        async with self.async_session() as session:
+            query = select(Category)
+            
+            if parent_id is None:
+                query = query.where(Category.parent_id == None)
+            else:
+                query = query.where(Category.parent_id == parent_id)
+            
+            if active_only:
+                query = query.where(Category.is_active == True)
+            
+            query = query.order_by(Category.sort_order, Category.name)
+            
+            result = await session.execute(query)
+            categories = result.scalars().all()
+            return [c.to_dict() for c in categories]
+    
+    async def get_category(self, category_id: int) -> Optional[Dict]:
+        """دریافت اطلاعات یک دسته‌بندی"""
+        async with self.async_session() as session:
+            result = await session.execute(
+                select(Category).where(Category.id == category_id)
+            )
+            category = result.scalar_one_or_none()
+            return category.to_dict() if category else None
+    
+    async def get_products_by_category(self, category_id: int, active_only: bool = True) -> List[Dict]:
+        """دریافت محصولات یک دسته‌بندی"""
+        async with self.async_session() as session:
+            query = select(Product).where(Product.category_id == category_id)
+            
+            if active_only:
+                query = query.where(Product.is_active == True)
+            
+            query = query.order_by(Product.id.desc())
+            
+            result = await session.execute(query)
+            products = result.scalars().all()
+            return [p.to_dict() for p in products]
